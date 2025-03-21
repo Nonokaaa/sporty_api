@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 
-
-
-const URI_MONGODB = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}.ppbs4ac.mongodb.net/`
+const URI_MONGODB = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}.wgk1j.mongodb.net/${process.env.DB_NAME}`;
 
 const connectToDB = async () => {
     try {
