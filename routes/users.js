@@ -1,6 +1,7 @@
 let express = require('express');
 let router = express.Router();
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 
 router.post('/register', function(req, res, next) {
   const { email, password } = req.body;
@@ -35,14 +36,8 @@ router.post('/login', function(req, res, next) {
         if (!isMatch) {
           return res.status(401).json({ error: 'Invalid credentials' });
         }
-        
-        res.json({ 
-          message: 'Login successful',
-          user: {
-            id: user._id,
-            email: user.email
-          }
-        });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
+        res.json({ message: 'Login successful', token, user });
       });
     })
     .catch(next);

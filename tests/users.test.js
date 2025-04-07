@@ -3,13 +3,12 @@ const mongoose = require('mongoose');
 const app = require('../app');
 const User = require('../models/User');
 
-// Clean up the database after each test
 
 describe('User Routes', () => {
-    afterEach(async () => {
-        await User.deleteMany();
-    });
     describe('POST /register', () => {
+        afterAll(async () => {
+            await User.deleteMany();
+        });
         it('should register a new user', async () => {
             const response = await request(app)
                 .post('/users/register')
@@ -39,10 +38,15 @@ describe('User Routes', () => {
     });
 
     describe('POST /login', () => {
-        beforeEach(async () => {
+        beforeAll(async () => {
             // Create a user for login tests
             const user = new User({ email: 'test@example.com', password: 'password123' });
             await user.save();
+        });
+
+        afterAll(async () => {
+            // Clean up the database after all tests
+            await User.deleteMany();
         });
 
         it('should log in an existing user with correct credentials', async () => {
