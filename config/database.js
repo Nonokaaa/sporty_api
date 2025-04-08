@@ -5,6 +5,7 @@ const URI_MONGODB = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_P
 const connectToDB = async () => {
     try {
         await mongoose.connect(URI_MONGODB);
+        // Add this somewhere in your code to log the connection pool status
         console.log('La connexion à la base de données a été établie avec succès.');
     } catch (error) {
         console.error('Impossible de se connecter à la base de données:', error);

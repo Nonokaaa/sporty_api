@@ -5,6 +5,9 @@ const User = require('../models/User');
 
 
 describe('User Routes', () => {
+    afterAll(async () => {
+        await mongoose.connection.close();
+    });
     describe('POST /register', () => {
         afterAll(async () => {
             await User.deleteMany();

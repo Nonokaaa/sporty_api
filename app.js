@@ -5,6 +5,8 @@ let cookieParser = require('cookie-parser');
 
 let seanceRouter = require('./routes/seances');
 let userRouter = require('./routes/users');
+let statisticsRouter = require('./routes/statistics');
+let goalsRouter = require('./routes/goals');
 
 const { connectToDB } = require('./config/database');
 
@@ -24,6 +26,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Set up routes
 app.use('/seances', seanceRouter);
 app.use('/users', userRouter);
+app.use('/statistics', statisticsRouter);
+app.use('/goals', goalsRouter);
 
 // Error handling middleware
 app.use(function(req, res, next) {
