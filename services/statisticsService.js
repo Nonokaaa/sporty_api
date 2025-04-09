@@ -32,7 +32,6 @@ exports.getWeeklyStats = async (userId, date = new Date()) => {
     }).sort({ date: 1 });
 
     // Calculate statistics
-    console.log('Sessions:', sessions);
     return calculateStats(sessions);
 };
 
