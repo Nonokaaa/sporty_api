@@ -2,6 +2,7 @@ let createError = require('http-errors');
 let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 let seanceRouter = require('./routes/seances');
 let userRouter = require('./routes/users');
@@ -22,6 +23,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Enable CORS for all routes
+app.use(cors());
 
 // Set up routes
 app.use('/seances', seanceRouter);
