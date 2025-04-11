@@ -44,8 +44,15 @@ npm start
     "password": "password123"
   }
   ```
-- **Response**: User object with hashed password
-- **Description**: Registers a new user
+- **Response**: 
+  ```json
+  {
+    "message": "Registration successful",
+    "token": "jwt_token",
+    "user": { "email": "user@example.com", ... }
+  }
+  ```
+- **Description**: Registers a new user and returns JWT token for immediate authentication
 
 #### Login
 - **URL**: `/users/login`

@@ -2,7 +2,7 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../app');
 const User = require('../models/User');
-
+const jwt = require('jsonwebtoken');
 
 describe('User Routes', () => {
     afterAll(async () => {
@@ -18,7 +18,24 @@ describe('User Routes', () => {
                 .send({ email: 'test@example.com', password: 'password123' });
 
             expect(response.status).toBe(200);
-            expect(response.body).toHaveProperty('email', 'test@example.com');
+            expect(response.body).toHaveProperty('user');
+            expect(response.body.user).toHaveProperty('email', 'test@example.com');
+        });
+
+        it('should return a token after successful registration', async () => {
+            const response = await request(app)
+                .post('/users/register')
+                .send({ email: 'token-test@example.com', password: 'password123' });
+
+            expect(response.status).toBe(200);
+            expect(response.body).toHaveProperty('message', 'Registration successful');
+            expect(response.body).toHaveProperty('token');
+            expect(response.body).toHaveProperty('user');
+            
+            // Verify the token is valid
+            const decoded = jwt.verify(response.body.token, process.env.JWT_SECRET);
+            expect(decoded).toHaveProperty('id');
+            expect(mongoose.Types.ObjectId.isValid(decoded.id)).toBe(true);
         });
 
         it('should return an error if email is missing', async () => {

@@ -15,11 +15,12 @@ router.post('/register', function(req, res, next) {
   } else {
     user.save()
     .then(user => {
-      res.json(user);
+      // Generate JWT token after successful registration
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
+      res.json({ message: 'Registration successful', token, user });
     })
     .catch(next);
   }
-
 });
 
 router.post('/login', function(req, res, next) {
