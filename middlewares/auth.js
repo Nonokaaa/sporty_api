@@ -10,3 +10,25 @@ exports.auth = async (req, res, next) => {
     next();
   });
 };
+
+/**
+ * Verifies a JWT token and returns the decoded payload or an error
+ * @param {string} token - The JWT token to verify
+ * @returns {Object} - Object with success status and either decoded token or error message
+ */
+exports.verifyToken = (token) => {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return { 
+      isValid: true, 
+      decoded,
+      error: null
+    };
+  } catch (error) {
+    return { 
+      isValid: false, 
+      decoded: null,
+      error: error.message
+    };
+  }
+};

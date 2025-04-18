@@ -2,6 +2,7 @@ let express = require('express');
 let router = express.Router();
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const { verifyToken } = require('../middlewares/auth');
 
 router.post('/register', function(req, res, next) {
   const { email, password } = req.body;
@@ -42,6 +43,27 @@ router.post('/login', function(req, res, next) {
       });
     })
     .catch(next);
+});
+
+router.post('/verify-token', function(req, res, next) {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ error: 'Token is required' });
+  }
+
+  const verification = verifyToken(token);
+  if (verification.isValid) {
+    return res.status(200).json({
+      valid: true,
+      user: verification.decoded,
+    });
+  } else {
+    res.status(401).json({ 
+      valid: false,
+      error: verification.error || 'Invalid token',
+    });
+  }
 });
 
 module.exports = router;

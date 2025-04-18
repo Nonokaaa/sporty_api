@@ -97,4 +97,85 @@ describe('User Routes', () => {
             expect(response.body).toHaveProperty('error', 'Invalid credentials');
         });
     });
+
+    describe('POST /verify-token', () => {
+        let validToken;
+        let expiredToken;
+        let invalidToken;
+        let userId;
+
+        beforeAll(async () => {
+            // Create a user to generate a valid token
+            const user = new User({ email: 'token-verify@example.com', password: 'password123' });
+            await user.save();
+            userId = user._id;
+
+            // Generate a valid token
+            validToken = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            
+            // Generate an expired token
+            expiredToken = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '0s' });
+            
+            // Generate an invalid token (wrong signature)
+            invalidToken = validToken.slice(0, -5) + 'wrong';
+        });
+
+        afterAll(async () => {
+            await User.deleteMany();
+        });
+
+        it('should verify a valid token successfully', async () => {
+            const response = await request(app)
+                .post('/users/verify-token')
+                .send({ token: validToken });
+
+            expect(response.status).toBe(200);
+            expect(response.body).toHaveProperty('valid', true);
+            expect(response.body).toHaveProperty('user');
+            expect(response.body.user).toHaveProperty('id', userId.toString());
+        });
+
+        it('should reject an expired token', async () => {
+            // Wait a moment to ensure token expiration
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const response = await request(app)
+                .post('/users/verify-token')
+                .send({ token: expiredToken });
+
+            expect(response.status).toBe(401);
+            expect(response.body).toHaveProperty('valid', false);
+            expect(response.body).toHaveProperty('error');
+            expect(response.body.error).toContain('expired');
+        });
+
+        it('should reject an invalid token', async () => {
+            const response = await request(app)
+                .post('/users/verify-token')
+                .send({ token: invalidToken });
+
+            expect(response.status).toBe(401);
+            expect(response.body).toHaveProperty('valid', false);
+            expect(response.body).toHaveProperty('error');
+        });
+
+        it('should return an error if token is missing', async () => {
+            const response = await request(app)
+                .post('/users/verify-token')
+                .send({});
+
+            expect(response.status).toBe(400);
+            expect(response.body).toHaveProperty('error', 'Token is required');
+        });
+
+        it('should handle malformed tokens', async () => {
+            const response = await request(app)
+                .post('/users/verify-token')
+                .send({ token: 'not.a.real.token' });
+
+            expect(response.status).toBe(401);
+            expect(response.body).toHaveProperty('valid', false);
+            expect(response.body).toHaveProperty('error');
+        });
+    });
 });

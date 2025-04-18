@@ -74,6 +74,31 @@ npm start
   ```
 - **Description**: Authenticates a user and returns JWT token
 
+#### Verify Token
+- **URL**: `/users/verify-token`
+- **Method**: `POST`
+- **Body**:
+  ```json
+  {
+    "token": "jwt_token"
+  }
+  ```
+- **Response**: 
+  ```json
+  {
+    "valid": true,
+    "user": { "id": "user_id", ... }
+  }
+  ```
+  or
+  ```json
+  {
+    "valid": false,
+    "error": "Token expired"
+  }
+  ```
+- **Description**: Verifies if a JWT token is valid and returns the decoded user information
+
 ### Workout Session Routes (Séances)
 
 All séance routes require authentication via Bearer token.
@@ -217,6 +242,18 @@ All goals routes require authentication via Bearer token.
 - **Response**: Progress details for the current goal
 - **Description**: Returns progress information for the active goal and automatically updates status for expired goals
 
-## License
+### Run Tests
+1. Create a `.test.env` file with:
+```
+DB_USERNAME=yourusername
+DB_PASSWORD=yourpassword
+DB_CLUSTER=yourcluster
+DB_NAME=yourtestdbname
+JWT_SECRET=yoursecretkey
+PORT=3002
+```
 
-This project is licensed under the MIT License.
+2. Run tests
+```bash
+npm run test
+```
