@@ -52,6 +52,24 @@ npm start
     "user": { "email": "user@example.com", ... }
   }
   ```
+- **Error Responses**:
+  ```json
+  {
+    "error": "Email is required"
+  }
+  ```
+  or
+  ```json
+  {
+    "error": "Password is required"
+  }
+  ```
+  or
+  ```json
+  {
+    "error": "Email already exists"
+  }
+  ```
 - **Description**: Registers a new user and returns JWT token for immediate authentication
 
 #### Login

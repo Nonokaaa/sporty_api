@@ -7,21 +7,29 @@ const { verifyToken } = require('../middlewares/auth');
 router.post('/register', function(req, res, next) {
   const { email, password } = req.body;
 
-  const user = new User({ email, password });
   if (!email) {
     return res.status(400).json({ error: 'Email is required' });
   }
   if (!password) {
     return res.status(400).json({ error: 'Password is required' });
-  } else {
-    user.save()
-    .then(user => {
-      // Generate JWT token after successful registration
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
-      res.json({ message: 'Registration successful', token, user });
-    })
-    .catch(next);
-  }
+  } 
+  
+  User.findOne({ email })
+  .then(existingUser => {
+    if (existingUser) {
+      return res.status(409).json({ error: 'Email already exists' });
+    }
+    
+    // If email doesn't exist, create new user
+    const user = new User({ email, password });
+    return user.save()
+      .then(newUser => {
+        // Generate JWT token after successful registration
+        const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
+        res.json({ message: 'Registration successful', token, user: newUser });
+      });
+  })
+  .catch(next);
 });
 
 router.post('/login', function(req, res, next) {

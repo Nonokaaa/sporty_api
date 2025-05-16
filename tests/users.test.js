@@ -55,6 +55,21 @@ describe('User Routes', () => {
             expect(response.status).toBe(400); // Adjust based on your validation logic
             expect(response.body).toHaveProperty('error', 'Password is required');
         });
+
+        it('should return an error if the email already exists', async () => {
+            // First registration should succeed
+            await request(app)
+                .post('/users/register')
+                .send({ email: 'duplicate@example.com', password: 'password123' });
+
+            // Second registration with the same email should fail
+            const response = await request(app)
+                .post('/users/register')
+                .send({ email: 'duplicate@example.com', password: 'different-password' });
+
+            expect(response.status).toBe(409);
+            expect(response.body).toHaveProperty('error', 'Email already exists');
+        });
     });
 
     describe('POST /login', () => {
