@@ -33,6 +33,14 @@ app.use('/users', userRouter);
 app.use('/statistics', statisticsRouter);
 app.use('/goals', goalsRouter);
 
+// Add root endpoint for health check
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Hello World', 
+    status: 'Server is running'
+  });
+});
+
 // Error handling middleware
 app.use(function(req, res, next) {
   next(createError(404));
