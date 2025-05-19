@@ -49,5 +49,12 @@ jobs:
     needs: test
 
     steps:
-      - name: Deploy (Simulation)
-        run: echo "Deploy done from commit $GITHUB_SHA"
+      - name: Deploy to Render
+        run: |
+          curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json"
+      
+      - name: Deployment status
+        run: echo "Deployment triggered for commit $GITHUB_SHA"
