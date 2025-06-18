@@ -17,10 +17,10 @@ describe('Seance Route', () => {
         });
         let token;
         beforeEach(async () => {
-            const user = new User({ email: 'seance@example.com', password: 'password123' });
+            const user = new User({ email: 'seance@example.com', username: 'seanceuser', password: 'password123' });
             await user.save();
 
-            token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
+            token = jwt.sign({ id: user._id, email: user.email, username: user.username }, process.env.JWT_SECRET, { expiresIn: '3h' });
 
         });
 
@@ -147,10 +147,10 @@ describe('Seance Route', () => {
         });
         let token;
         beforeEach(async () => {
-            const user = new User({ email: 'seance@example.com', password: 'password123' });
+            const user = new User({ email: 'seance@example.com', username: 'seanceuser', password: 'password123' });
             await user.save();
 
-            token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
+            token = jwt.sign({ id: user._id, email: user.email, username: user.username }, process.env.JWT_SECRET, { expiresIn: '3h' });
 
             const seance = new Seance({
                 type: 1,
@@ -180,7 +180,7 @@ describe('Seance Route', () => {
             expect(response.body.calories).toBe(updatedSeance.calories);
         });
         it ('should return 403 if seance does not belong to user', async () => {
-            const wrongUser = new User({ email: 'wronguser@example.com', password: 'wrongUser123' });
+            const wrongUser = new User({ email: 'wronguser@example.com', username: 'seancessuser', password: 'wrongUser123' });
             await wrongUser.save();
             tokenWrongUser = jwt.sign({ id: wrongUser._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
             const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -302,7 +302,7 @@ describe('Seance Route', () => {
         let seance;
 
         beforeEach(async () => {
-            user = new User ({ email: 'deletetest@example.com', password: 'password123' });
+            user = new User ({ email: 'deletetest@example.com', username: 'seancessuser', password: 'password123' });
             await user.save();
             token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
             seance = new Seance({
@@ -323,7 +323,7 @@ describe('Seance Route', () => {
             expect(deletedSeance).toBeNull();
         });
         it ('should return 403 if seance does not belong to user', async () => {
-            wrongUser = new User ({ email: 'deletewronguser@example.com', password: 'password123' });
+            wrongUser = new User ({ email: 'deletewronguser@example.com', username: 'seancessuser', password: 'password123' });
             await wrongUser.save();
             tokenWrongUser = jwt.sign({ id: wrongUser._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
 
@@ -369,7 +369,7 @@ describe('Seance Route', () => {
         
         beforeEach(async () => {
             // Create a user
-            user = new User({ email: 'gettest@example.com', password: 'password123' });
+            user = new User({ email: 'gettest@example.com', username: 'seancessuser', password: 'password123' });
             await user.save();
             
             // Create token for this user
@@ -420,7 +420,7 @@ describe('Seance Route', () => {
         
         it('should return empty array if user has no seances', async () => {
             // Create a user with no seances
-            const emptyUser = new User({ email: 'empty@example.com', password: 'password123' });
+            const emptyUser = new User({ email: 'empty@example.com', username: 'seancessuser', password: 'password123' });
             await emptyUser.save();
             
             // Create token for this user
@@ -437,7 +437,7 @@ describe('Seance Route', () => {
         
         it('should not return seances from other users', async () => {
             // Create another user with their own seance
-            const otherUser = new User({ email: 'other@example.com', password: 'password123' });
+            const otherUser = new User({ email: 'other@example.com', username: 'seancessuser', password: 'password123' });
             await otherUser.save();
             
             const otherSeance = new Seance({

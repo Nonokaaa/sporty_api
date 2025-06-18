@@ -18,9 +18,9 @@ describe('Goal Routes', () => {
         await Seance.deleteMany();
         
         // Create test user for all tests
-        user = new User({ email: 'goaltest@example.com', password: 'password123' });
+        user = new User({ email: 'goaltest@example.com', username: 'goaltestuser', password: 'password123' });
         await user.save();
-        token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
+        token = jwt.sign({ id: user._id, email: user.email, username: user.username }, process.env.JWT_SECRET, { expiresIn: '3h' });
     });
     
     afterAll(async () => {

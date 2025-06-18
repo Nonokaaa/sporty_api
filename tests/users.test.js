@@ -15,7 +15,7 @@ describe('User Routes', () => {
         it('should register a new user', async () => {
             const response = await request(app)
                 .post('/users/register')
-                .send({ email: 'test@example.com', password: 'password123' });
+                .send({ email: 'test@example.com', username: 'testuser', password: 'password123' });
 
             expect(response.status).toBe(200);
             expect(response.body).toHaveProperty('user');
@@ -25,7 +25,7 @@ describe('User Routes', () => {
         it('should return a token after successful registration', async () => {
             const response = await request(app)
                 .post('/users/register')
-                .send({ email: 'token-test@example.com', password: 'password123' });
+                .send({ email: 'token-test@example.com', username: 'tokenuser', password: 'password123' });
 
             expect(response.status).toBe(200);
             expect(response.body).toHaveProperty('message', 'Registration successful');
@@ -41,16 +41,25 @@ describe('User Routes', () => {
         it('should return an error if email is missing', async () => {
             const response = await request(app)
                 .post('/users/register')
-                .send({ password: 'password123' });
+                .send({ username: 'testuser', password: 'password123' });
 
             expect(response.status).toBe(400); // Adjust based on your validation logic
             expect(response.body).toHaveProperty('error', 'Email is required');
         });
 
+        it('should return an error if username is missing', async () => {
+            const response = await request(app)
+                .post('/users/register')
+                .send({ email: 'test@example.com', password: 'password123' });
+
+            expect(response.status).toBe(400);
+            expect(response.body).toHaveProperty('error', 'Username is required');
+        });
+
         it('should return an error if password is missing', async () => {
             const response = await request(app)
                 .post('/users/register')
-                .send({ email: 'test@example' });
+                .send({ email: 'test@example', username: 'testuser' });
 
             expect(response.status).toBe(400); // Adjust based on your validation logic
             expect(response.body).toHaveProperty('error', 'Password is required');
@@ -60,12 +69,12 @@ describe('User Routes', () => {
             // First registration should succeed
             await request(app)
                 .post('/users/register')
-                .send({ email: 'duplicate@example.com', password: 'password123' });
+                .send({ email: 'duplicate@example.com', username: 'user1', password: 'password123' });
 
             // Second registration with the same email should fail
             const response = await request(app)
                 .post('/users/register')
-                .send({ email: 'duplicate@example.com', password: 'different-password' });
+                .send({ email: 'duplicate@example.com', username: 'user2', password: 'different-password' });
 
             expect(response.status).toBe(409);
             expect(response.body).toHaveProperty('error', 'Email already exists');
@@ -75,7 +84,7 @@ describe('User Routes', () => {
     describe('POST /login', () => {
         beforeAll(async () => {
             // Create a user for login tests
-            const user = new User({ email: 'test@example.com', password: 'password123' });
+            const user = new User({ email: 'test@example.com', username: 'logintest', password: 'password123' });
             await user.save();
         });
 
@@ -121,7 +130,7 @@ describe('User Routes', () => {
 
         beforeAll(async () => {
             // Create a user to generate a valid token
-            const user = new User({ email: 'token-verify@example.com', password: 'password123' });
+            const user = new User({ email: 'token-verify@example.com', username: 'tokenverify', password: 'password123' });
             await user.save();
             userId = user._id;
 

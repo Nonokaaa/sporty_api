@@ -5,10 +5,13 @@ const jwt = require('jsonwebtoken');
 const { verifyToken } = require('../middlewares/auth');
 
 router.post('/register', function(req, res, next) {
-  const { email, password } = req.body;
+  const { email, username, password } = req.body;
 
   if (!email) {
     return res.status(400).json({ error: 'Email is required' });
+  }
+  if (!username) {
+    return res.status(400).json({ error: 'Username is required' });
   }
   if (!password) {
     return res.status(400).json({ error: 'Password is required' });
@@ -21,11 +24,11 @@ router.post('/register', function(req, res, next) {
     }
     
     // If email doesn't exist, create new user
-    const user = new User({ email, password });
+    const user = new User({ email, username, password });
     return user.save()
       .then(newUser => {
         // Generate JWT token after successful registration
-        const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
+        const token = jwt.sign({ id: newUser._id, email: newUser.email, username: newUser.username }, process.env.JWT_SECRET, { expiresIn: '3h' });
         res.json({ message: 'Registration successful', token, user: newUser });
       });
   })
@@ -46,7 +49,7 @@ router.post('/login', function(req, res, next) {
         if (!isMatch) {
           return res.status(401).json({ error: 'Invalid credentials' });
         }
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
+        const token = jwt.sign({ id: user._id, email: user.email, username: user.username }, process.env.JWT_SECRET, { expiresIn: '3h' });
         res.json({ message: 'Login successful', token, user });
       });
     })

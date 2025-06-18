@@ -41,6 +41,7 @@ npm start
   ```json
   {
     "email": "user@example.com",
+    "username": "userfirstname",
     "password": "password123"
   }
   ```

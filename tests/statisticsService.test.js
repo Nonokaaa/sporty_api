@@ -55,7 +55,7 @@ describe('Statistics Service', () => {
         });
 
         it('should return weekly statistics for a user', async () => {
-            const user = new User({ email: 'stats@example.com', password: 'password123' });
+            const user = new User({ email: 'stats@example.com', username: 'statsuser', password: 'password123' });
             await user.save();
 
             const sessions = [
@@ -77,7 +77,7 @@ describe('Statistics Service', () => {
             });
         });
         it('should return zero stats when user has no sessions', async () => {
-            const user = new User({ email: 'nostats@example.com', password: 'password123' });
+            const user = new User({ email: 'nostats@example.com', username: 'nostatsuser', password: 'password123' });
             await user.save();
             
             const stats = await statisticsService.getWeeklyStats(user._id);
@@ -93,7 +93,7 @@ describe('Statistics Service', () => {
             });
         });
         it('should return zero stats when all sessions are outside the weekly range', async () => {
-            const user = new User({ email: 'oldstats@example.com', password: 'password123' });
+            const user = new User({ email: 'oldstats@example.com', username: 'oldstatsuser', password: 'password123' });
             await user.save();
             
             const sessions = [
@@ -115,7 +115,7 @@ describe('Statistics Service', () => {
             });
         });
         it('should only count sessions from the last 7 days', async () => {
-            const user = new User({ email: 'mixstats@example.com', password: 'password123' });
+            const user = new User({ email: 'mixstats@example.com', username: 'mixstatsuser', password: 'password123' });
             await user.save();
             
             const currentDate = new Date();
@@ -148,7 +148,7 @@ describe('Statistics Service', () => {
         });
 
         it('should return monthly statistics for a user', async () => {
-            const user = new User({ email: 'stats@example.com', password: 'password123' });
+            const user = new User({ email: 'stats@example.com', username: 'statsuser', password: 'password123' });
             await user.save();
 
             const sessions = [
@@ -171,7 +171,7 @@ describe('Statistics Service', () => {
         });
         
         it('should return zero stats when user has no sessions', async () => {
-            const user = new User({ email: 'nostats_monthly@example.com', password: 'password123' });
+            const user = new User({ email: 'nostats_monthly@example.com', username: 'nostatsuser', password: 'password123' });
             await user.save();
             
             const stats = await statisticsService.getMonthlyStats(user._id);
@@ -188,7 +188,7 @@ describe('Statistics Service', () => {
         });
 
         it('should return zero stats when all sessions are outside the monthly range', async () => {
-            const user = new User({ email: 'oldstats_monthly@example.com', password: 'password123' });
+            const user = new User({ email: 'oldstats_monthly@example.com', username: 'oldstatsuser', password: 'password123' });
             await user.save();
             
             const sessions = [
@@ -211,7 +211,7 @@ describe('Statistics Service', () => {
         });
 
         it('should only count sessions from the last 30 days', async () => {
-            const user = new User({ email: 'mixstats_monthly@example.com', password: 'password123' });
+            const user = new User({ email: 'mixstats_monthly@example.com', username: 'mixstatsuser', password: 'password123' });
             await user.save();
             
             const currentDate = new Date();
@@ -264,7 +264,7 @@ describe('Statistics Service', () => {
         
         it('should correctly compare two seances', async () => {
             // Create a user
-            const user = new User({ email: 'compare@example.com', password: 'password123' });
+            const user = new User({ email: 'compare@example.com', username: 'statsuser', password: 'password123' });
             await user.save();
             
             // Create two seances to compare
@@ -297,7 +297,7 @@ describe('Statistics Service', () => {
         });
         
         it('should throw error for invalid seance IDs', async () => {
-            const user = new User({ email: 'invalid@example.com', password: 'password123' });
+            const user = new User({ email: 'invalid@example.com', username: 'statsuser', password: 'password123' });
             await user.save();
             
             await expect(statisticsService.compareSeances(
@@ -308,7 +308,7 @@ describe('Statistics Service', () => {
         });
         
         it('should throw error when seances are not found', async () => {
-            const user = new User({ email: 'notfound@example.com', password: 'password123' });
+            const user = new User({ email: 'notfound@example.com', username: 'statsuser', password: 'password123' });
             await user.save();
             
             const nonExistentId1 = new mongoose.Types.ObjectId();
@@ -323,8 +323,8 @@ describe('Statistics Service', () => {
         
         it('should throw error for unauthorized access', async () => {
             // Create two users
-            const user1 = new User({ email: 'user1@example.com', password: 'password123' });
-            const user2 = new User({ email: 'user2@example.com', password: 'password123' });
+            const user1 = new User({ email: 'user1@example.com', username: 'statsuser', password: 'password123' });
+            const user2 = new User({ email: 'user2@example.com', username: 'statsuser', password: 'password123' });
             await user1.save();
             await user2.save();
             
@@ -345,7 +345,7 @@ describe('Statistics Service', () => {
         
         it('should handle negative differences correctly', async () => {
             // Create a user
-            const user = new User({ email: 'negative@example.com', password: 'password123' });
+            const user = new User({ email: 'negative@example.com', username: 'statsuser', password: 'password123' });
             await user.save();
             
             // Create two seances where second has lower values
@@ -379,7 +379,7 @@ describe('Statistics Service', () => {
         
         it('should calculate average calories by activity type', async () => {
             // Create a user
-            const user = new User({ email: 'calories@example.com', password: 'password123' });
+            const user = new User({ email: 'calories@example.com', username: 'statsuser', password: 'password123' });
             await user.save();
             
             // Create sessions of different types
@@ -430,7 +430,7 @@ describe('Statistics Service', () => {
         
         it('should return zeros for activity types with no sessions', async () => {
             // Create a user
-            const user = new User({ email: 'partial@example.com', password: 'password123' });
+            const user = new User({ email: 'partial@example.com', username: 'statsuser', password: 'password123' });
             await user.save();
             
             // Create sessions of only type 1 (running)
@@ -464,7 +464,7 @@ describe('Statistics Service', () => {
         
         it('should return zero stats when user has no sessions', async () => {
             // Create a user with no sessions
-            const user = new User({ email: 'nosessions@example.com', password: 'password123' });
+            const user = new User({ email: 'nosessions@example.com', username: 'statsuser', password: 'password123' });
             await user.save();
             
             // Get average calories by activity type

@@ -18,9 +18,9 @@ describe('Statistics Routes', () => {
             await User.deleteMany();
             await Seance.deleteMany();
 
-            user = new User({ email: 'statsweekly@example.com', password: 'password123' });
+            user = new User({ email: 'statsweekly@example.com', username: 'statsuser', password: 'password123' });
             await user.save();
-            token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
+            token = jwt.sign({ id: user._id, email: user.email, username: user.username }, process.env.JWT_SECRET, { expiresIn: '3h' });
 
             // Create seances for the user
             const seances = [
@@ -90,9 +90,9 @@ describe('Statistics Routes', () => {
             await User.deleteMany();
             await Seance.deleteMany();
 
-            user = new User({ email: 'statsmonthly@example.com', password: 'password123' });
+            user = new User({ email: 'statsmonthly@example.com', username: 'statsuser', password: 'password123' });
             await user.save();
-            token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
+            token = jwt.sign({ id: user._id, email: user.email, username: user.username }, process.env.JWT_SECRET, { expiresIn: '3h' });
 
             const seances = [
                 new Seance({ type: 1, duration: 100, distance: 2000, calories: 50, user: user._id }),
@@ -179,7 +179,7 @@ describe('Statistics Routes', () => {
             await User.deleteMany();
             await Seance.deleteMany();
 
-            user = new User({ email: 'comparetest@example.com', password: 'password123' });
+            user = new User({ email: 'comparetest@example.com', username: 'statsuser', password: 'password123' });
             await user.save();
             token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
 
@@ -253,7 +253,7 @@ describe('Statistics Routes', () => {
 
         it('should handle unauthorized access to sessions', async () => {
             // Create another user
-            const anotherUser = new User({ email: 'another@example.com', password: 'password123' });
+            const anotherUser = new User({ email: 'another@example.com', username: 'statsuser' , password: 'password123' });
             await anotherUser.save();
             
             // Create a seance for this user
@@ -279,7 +279,7 @@ describe('Statistics Routes', () => {
             await User.deleteMany();
             await Seance.deleteMany();
 
-            user = new User({ email: 'caloriestest@example.com', password: 'password123' });
+            user = new User({ email: 'caloriestest@example.com', username: 'statsuser', password: 'password123' });
             await user.save();
             token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
 
@@ -334,7 +334,7 @@ describe('Statistics Routes', () => {
 
         it('should return empty statistics when user has no sessions', async () => {
             // Create a new user with no sessions
-            const emptyUser = new User({ email: 'emptyuser@example.com', password: 'password123' });
+            const emptyUser = new User({ email: 'emptyuser@example.com', username: 'statsuser', password: 'password123' });
             await emptyUser.save();
             const emptyToken = jwt.sign({ id: emptyUser._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
             
