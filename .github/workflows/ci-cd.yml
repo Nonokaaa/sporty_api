@@ -1,0 +1,57 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build docker image
+        run: |
+          docker build -t monapp-ci:$GITHUB_SHA .
+  
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Create test environment file
+        run: |
+          echo "DB_USERNAME=${{ secrets.TEST_DB_USERNAME }}" >> .test.env
+          echo "DB_PASSWORD=${{ secrets.TEST_DB_PASSWORD }}" >> .test.env
+          echo "DB_CLUSTER=${{ secrets.TEST_DB_CLUSTER }}" >> .test.env
+          echo "DB_NAME=${{ secrets.TEST_DB_NAME }}" >> .test.env
+          echo "JWT_SECRET=${{ secrets.TEST_JWT_SECRET }}" >> .test.env
+          echo "PORT=3002" >> .test.env
+
+      - name: Run tests
+        run: |
+          npm install
+          npm test
+  
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Deploy to Render
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+    
+      - name: Deployment status
+        run: echo "Deployment triggered for commit $GITHUB_SHA"
